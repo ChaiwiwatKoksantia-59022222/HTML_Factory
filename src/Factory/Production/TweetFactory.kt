@@ -11,7 +11,23 @@ class TweetFactory {
 
     var stringLine: String = String()
 
-    fun startTweetFactory(string: String) {
+    var count: Int = 0
+    var datePass :Boolean = false
+    var CounterPass :Int = 0
+    val resource: ArrayList<String>
+
+    constructor(resource: ArrayList<String>) {
+        this.resource = resource
+    }
+
+    fun startTweetFactory() {
+        for (i in resource) {
+            factoryEngine(i)
+            count++
+        }
+    }
+
+    private fun factoryEngine(string: String) {
         this.stringLine = string
         protectCheck()
         lookAtLine()
@@ -24,6 +40,58 @@ class TweetFactory {
         if (emptyCheck(cookbook.videoAspect) && !emptyCheck(cookbook.videoWeight) && !emptyCheck(cookbook.videoHeight)) {
             videoInformationProcessing()
         }
+        if (stringLine.contains("tweet-timestamp js-permalink js-nav js-tooltip") && stringLine.contains(cookbook.username) && !datePass) {
+            dateTimeProductLine()
+        }
+        if (stringLine.contains("ProfileTweet-action--reply u-hiddenVisually") && CounterPass < 3){
+            cropCounterProductLine(1)
+        }
+        if (stringLine.contains("ProfileTweet-action--favorite u-hiddenVisually") && CounterPass < 3){
+            cropCounterProductLine(2)
+        }
+        if (stringLine.contains("ProfileTweet-action--retweet u-hiddenVisually") && CounterPass < 3){
+            cropCounterProductLine(3)
+        }
+    }
+
+    private fun cropCounterProductLine(id: Int){
+        checkStringReadyForUse("</span>")
+        val s = "data-tweet-stat-count="
+        if (stringLine.contains("data-aria-label-part")){
+            val x = stringLine.indexOf(s) + s.length + 1
+            val line = stringLine.substring(x)
+            val y = line.indexOf(">") - 1
+            val result = line.substring(0,y)
+            when (id){
+                1 -> cookbook.commentsCounter = result
+                2 -> cookbook.likesCounter = result
+                3 -> cookbook.retweetsCounter = result
+            }
+            CounterPass++
+        }
+    }
+
+    private fun checkStringReadyForUse(end: String) {
+        var pass = false
+
+        var i = 0
+        while (!pass) {
+            i++
+            if (!stringLine.contains(end)) {
+                stringLine = stringLine + resource.get(count + i)
+            } else {
+                pass = true
+            }
+        }
+        //println(stringLine)
+    }
+
+    private fun dateTimeProductLine(){
+        val x = stringLine.indexOf("title=")+7
+        val line = stringLine.substring(x)
+        val y = line.indexOf("  data-conversation-id=") - 1
+        cookbook.dateTime = line.substring(0,y)
+        datePass = true
     }
 
     private fun convertToOriginalImage(url: String): String {
@@ -36,15 +104,15 @@ class TweetFactory {
         return initial + end + ":orig"
     }
 
-    private fun videoInformationProcessing(){
-        val height :Int = Integer.parseInt(cookbook.videoHeight)
-        val weight :Int = Integer.parseInt(cookbook.videoWeight)
+    private fun videoInformationProcessing() {
+        val height: Int = Integer.parseInt(cookbook.videoHeight)
+        val weight: Int = Integer.parseInt(cookbook.videoWeight)
 
-        if (height > weight){
+        if (height > weight) {
             cookbook.videoAspect = "portrait"
-        } else if (weight > height){
+        } else if (weight > height) {
             cookbook.videoAspect = "Landscape"
-        } else{
+        } else {
             cookbook.videoAspect = "square"
         }
     }
@@ -53,18 +121,17 @@ class TweetFactory {
         if (stringLine.contains("og:type") && !stringLine.contains("og:video:type")) {
             cookbook.type = stringCrop()
         } else if (stringLine.contains("og:url") && !stringLine.contains("og:video:url") && !stringLine.contains("og:video:secure_url")) {
-            cookbook.username = "@" + usernameCrop()
+            cookbook.username = usernameCrop()
             cookbook.url = stringCrop()
         } else if (stringLine.contains("og:description")) {
-           descriptionProcessing()
+            descriptionProcessing()
         }
 
         if (stringLine.contains("og:image") && !stringLine.contains("og:image:user_generated") && !stringLine.contains("/profile_images/")) {
             cookbook.addImageSlot(convertToOriginalImage(stringCrop()))
         }
-        if (cookbook.type.contentEquals("video")){
+        if (cookbook.type.contentEquals("video")) {
             if (stringLine.contains("og:video:url")) {
-                //cookbook.setVideo_list(contentCutFunc())
                 cookbook.addVideoSlot(stringCrop())
             } else if (stringLine.contains("og:video:width")) {
                 cookbook.videoWeight = stringCrop()
@@ -72,6 +139,7 @@ class TweetFactory {
                 cookbook.videoHeight = stringCrop()
             }
         }
+
     }
 
     private fun descriptionProcessing() {
@@ -82,7 +150,6 @@ class TweetFactory {
 
         for (i in description.indices) {
             val character: Char = description.get(i)
-
             if (character == '@' && !mantle) {
                 mantle = true
                 initial = i
@@ -91,6 +158,10 @@ class TweetFactory {
                     || character >= '0' && character <= '9')) {
                 mantle = false
                 cookbook.addNameSlot(description.substring(initial, i))
+            }
+            if (i == description.length - 1 && mantle) {
+                cookbook.addNameSlot(description.substring(initial, i + 1))
+                mantle = false
             }
         }
 
@@ -113,27 +184,31 @@ class TweetFactory {
     }
 
     private fun descriptionCrop(): String {
-        val index = stringLine.indexOf("content=") + 10
-        val end = stringLine.length - 3
+        val index: Int = stringLine.indexOf("content=") + 10
+        val end: Int = stringLine.length - 3
 
         return stringLine.substring(index, end)
     }
 
     private fun usernameCrop(): String {
         val x = "https://twitter.com/"
-        val index = stringLine.indexOf(x) + x.length
+        val index: Int = stringLine.indexOf(x) + x.length
         val y = "/status/"
-        val end = stringLine.indexOf(y)
+        val end: Int = stringLine.indexOf(y)
 
         return stringLine.substring(index, end)
     }
 
     private fun stringCrop(): String {
 
-        val index = stringLine.indexOf("content=") + 9
-        val end = stringLine.length - 2
+        val index: Int = stringLine.indexOf("content=") + 9
+        val end: Int = stringLine.length - 2
         return stringLine.substring(index, end)
 
+    }
+
+    private fun findCurrentLine(): Int {
+        return count
     }
 
     private fun emptyCheck(string: String): Boolean {
@@ -141,8 +216,8 @@ class TweetFactory {
     }
 
     private fun protectCheck(): Boolean {
-        cookbook.protect = stringLine.contains("ProtectedTimeline-heading")
-        return cookbook.protect
+        cookbook.isProtect = stringLine.contains("ProtectedTimeline-heading")
+        return cookbook.isProtect
     }
 
 }

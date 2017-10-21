@@ -27,10 +27,32 @@ class URLFactory {
     private fun generator(buffer: BufferedReader) {
         var array: ArrayList<String> = ArrayList()
         for (inputLine in buffer.lines()) {
-            array.add(convert(inputLine))
+            var line = convert(inputLine)
+            if (line.contains("&amp;")) {
+                line = cutAndRepairString(line, "&amp;", "&")
+            }
+            array.add(line)
         }
         this.resource = array
 
+    }
+
+    private fun cutAndRepairString(source: String, cutString: String, repairString: String): String {
+        var pass = false
+        var line: String = source
+        while (!pass) {
+            if (line.contains(cutString)){
+                val x = source.indexOf(cutString)
+                val lineX = source.substring(0, x)
+                val lineY = source.substring(x + cutString.length)
+
+                line = lineX + repairString + lineY
+            }
+            else {
+                pass = true
+            }
+        }
+        return line
     }
 
     fun getResource(): ArrayList<String> {
@@ -46,7 +68,6 @@ class URLFactory {
             println(i)
         }
     }
-
 
 
 }

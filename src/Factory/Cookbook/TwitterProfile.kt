@@ -1,51 +1,6 @@
 package Factory.Cookbook
 
-class Tweet {
-
-    var imageSlot: ArrayList<String> = ArrayList()
-        get() = field
-    var nameSlot: ArrayList<String> = ArrayList()
-        get() = field
-    var hashtagSlot: ArrayList<String> = ArrayList()
-        get() = field
-    var videoSlot: ArrayList<String> = ArrayList()
-        get() = field
-
-    var username: String = ""
-        get() = field
-        set(value) {
-            field = value
-        }
-    var desciption: String = ""
-        get() = field
-        set(value) {
-            field = value
-        }
-    var url: String = ""
-        get() = field
-        set(value) {
-            field = value
-        }
-    var videoHeight: String = String()
-        get() = field
-        set(value) {
-            field = value
-        }
-    var videoWeight: String = String()
-        get() = field
-        set(value) {
-            field = value
-        }
-    var type: String = ""
-        get() = field
-        set(value) {
-            field = value
-        }
-    var videoAspect: String = ""
-        get() = field
-        set(value) {
-            field = value
-        }
+class TwitterProfile {
 
     var isProtect: Boolean = false
         get() = field
@@ -53,7 +8,87 @@ class Tweet {
             field = value
         }
 
-    var dateTime: String = ""
+    var themeColor: String = ""
+        get() = field
+        set(value) {
+            field = value
+        }
+
+    //<style id="user-style-
+
+    var bio: String = ""
+        get() = field
+        set(value) {
+            field = value
+        }
+
+    var statusName: String = ""
+        get() = field
+        set(value) {
+            field = value
+        }
+
+    var userName: String = ""
+        get() = field
+        set(value) {
+            field = value
+        }
+
+    var externalLink: String = ""
+        get() = field
+        set(value) {
+            field = value
+        }
+
+    var joinDate: String = ""
+        get() = field
+        set(value) {
+            field = value
+        }
+
+    var joinDateDetail: String = ""
+        get() = field
+        set(value) {
+            field = value
+        }
+
+    var bornData: String = ""
+        get() = field
+        set(value) {
+            field = value
+        }
+
+    var location: String = ""
+        get() = field
+        set(value) {
+            field = value
+        }
+
+    var profileImage: String = ""
+        get() = field
+        set(value) {
+            field = value
+        }
+
+    var coverImage: String = ""
+        get() = field
+        set(value) {
+            field = value
+        }
+
+    var tweetsCounter: String = ""
+        get() = field
+        set(value) {
+            field = value
+        }
+
+    var followingCounter: String = ""
+        get() = field
+        set(value) {
+            field = value
+        }
+
+    var followersCounter: String = ""
         get() = field
         set(value) {
             field = value
@@ -64,33 +99,5 @@ class Tweet {
         set(value) {
             field = value
         }
-
-    var retweetsCounter: String = ""
-        get() = field
-        set(value) {
-            field = value
-        }
-
-    var commentsCounter: String = ""
-        get() = field
-        set(value) {
-            field = value
-        }
-
-    fun addImageSlot(word: String) {
-        this.imageSlot.add(word)
-    }
-
-    fun addNameSlot(word: String) {
-        this.nameSlot.add(word)
-    }
-
-    fun addHashtagSlot(word: String) {
-        this.hashtagSlot.add(word)
-    }
-
-    fun addVideoSlot(word: String) {
-        this.videoSlot.add(word)
-    }
 
 }
