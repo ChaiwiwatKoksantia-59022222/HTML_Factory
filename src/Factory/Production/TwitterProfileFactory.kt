@@ -12,8 +12,8 @@ class TwitterProfileFactory {
     var urls: String = String()
     var userCheck = false
 
-    var counts :Int = 0
-    var value_array :ArrayList<String> = ArrayList()
+    var counts: Int = 0
+    var value_array: ArrayList<String> = ArrayList()
 
     constructor(resource: ArrayList<String>) {
         this.resource = resource
@@ -23,6 +23,7 @@ class TwitterProfileFactory {
         for (i in resource) {
             factoryEngine(i)
             currentLine++
+            //println(i)
         }
     }
 
@@ -49,7 +50,10 @@ class TwitterProfileFactory {
             coverImageProductLine()
         }
         if (stringLine.contains("ProfileHeaderCard-bio u-dir")) {
+            //println("BIO")
             //bioProductLine()
+
+            bioProcess()
         }
         if (stringLine.contains("ProfileHeaderCard-locationText u-dir")) {
             locationProductLine() //PASS
@@ -60,25 +64,23 @@ class TwitterProfileFactory {
         if (stringLine.contains("ProfileHeaderCard-birthdateText u-dir") && stringLine.contains("js-tooltip")) {
             bornDateProductLine() //PASS
         }
-        if (stringLine.contains("ProfileNav-value")){
+        if (stringLine.contains("ProfileNav-value")) {
             //println("ER" + countCrop())
             value_array.add(countCrop())
         }
-        if (stringLine.contains("ProfileHeaderCard-urlText u-dir")){
+        if (stringLine.contains("ProfileHeaderCard-urlText u-dir")) {
             externalLinkProductLine()
         }
-        if (stringLine.contains("AppContent-main content-main u-cf")){
-            for (i in value_array){
-                if (i.contentEquals(value_array.get(0))){
+        if (stringLine.contains("AppContent-main content-main u-cf")) {
+            for (i in value_array) {
+                if (i.contentEquals(value_array.get(0))) {
                     cookbook.tweetsCounter = value_array.get(0)
-                }else if (i.contentEquals(value_array.get(1))){
+                } else if (i.contentEquals(value_array.get(1))) {
                     cookbook.followingCounter = value_array.get(1)
-                }
-                else if (i.contentEquals(value_array.get(2))){
+                } else if (i.contentEquals(value_array.get(2))) {
                     cookbook.followersCounter = value_array.get(2)
-                }
-                else if (i.contentEquals(value_array.get(3))){
-                    cookbook.likesCounter =value_array.get(3)
+                } else if (i.contentEquals(value_array.get(3))) {
+                    cookbook.likesCounter = value_array.get(3)
                 }
             }
         }
@@ -86,26 +88,26 @@ class TwitterProfileFactory {
     }
 
     //EXTERNAL LINK
-    private fun externalLinkProductLine(){
-        if (stringLine.contains("title=")){
-            val x = stringLine.indexOf("title=")+7
+    private fun externalLinkProductLine() {
+        if (stringLine.contains("title=")) {
+            val x = stringLine.indexOf("title=") + 7
             val line = stringLine.substring(x)
-            val y = line.indexOf(">")-1
-            cookbook.externalLink = line.substring(0,y)
+            val y = line.indexOf(">") - 1
+            cookbook.externalLink = line.substring(0, y)
         }
     }
 
     //Profile Value
-    private fun countCrop():String{
+    private fun countCrop(): String {
         checkStringReadyForUse("</span>")
         val initial = stringLine.indexOf(">") + 1
         val line = stringLine.substring(initial)
         val end = line.indexOf("<")
         counts + 1
-        return line.substring(0,end)
+        return line.substring(0, end)
     }
 
-   // private fun valusCut() :String{
+    // private fun valusCut() :String{
 
     //}
 
@@ -165,7 +167,8 @@ class TwitterProfileFactory {
         val x = stringLine.indexOf("title=") + 7
         val y = stringLine.indexOf(">") - 1
         cookbook.joinDateDetail = stringLine.substring(x, y)
-        cookbook.joinDate = removeSpare(cropStringWithFunc(stringLine))
+        var line = removeSpare(cropStringWithFunc(stringLine))
+        cookbook.joinDate = line.substring(7)
     }
 
     //BORN DATE
@@ -223,11 +226,6 @@ class TwitterProfileFactory {
     }
 
 
-    //BIO
-    private fun bioProductLine() {
-        checkStringReadyForUse("</p>")
-    }
-
     private fun checkStringReadyForUse(end: String) {
         var pass = false
 
@@ -241,6 +239,68 @@ class TwitterProfileFactory {
             }
         }
         //println(stringLine)
+    }
+
+    private fun checkStringReadyForUseWithReturn(s: String, end: String): String {
+        var pass = false
+        var string: String = s
+
+        var i = 0
+        while (!pass) {
+            i++
+            if (!string.contains(end)) {
+                string = string + resource.get(currentLine + i)
+            } else {
+                pass = true
+            }
+        }
+        return s
+        //println(stringLine)
+    }
+
+
+    //BIO
+    private fun bioProcess() {
+        checkStringReadyForUse("</p>")
+        //println(stringLine)
+        checkS()
+    }
+
+    private fun checkS() {
+        var pass = false
+        var count = 1
+        var line = stringLine
+        var initial = -1
+        var u = false
+        var array: ArrayList<String> = ArrayList()
+        while (!pass) {
+            var a = line[count]
+            //println(a+" : "+count)
+            if (a.equals('>')) {
+                //println("Point : " + line.get(count))
+                initial = count + 1
+                u = true
+            }
+            if (a.equals('<') && u == true){
+                //println("END")
+                var li = line.substring(initial,count)
+                //println(line.substring(initial))
+                array.add(li)
+                u = false
+            }
+            if (count == line.length - 1){
+                pass = true
+            }
+            count++
+        }
+        var str = ""
+        for (s in array){
+            if (s.length > 0){
+                str = str + s
+            }
+        }
+        //println(str)
+        cookbook.bio = str
     }
 
 

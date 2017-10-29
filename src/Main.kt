@@ -8,8 +8,8 @@ fun main(args: Array<String>) {
     //val url_from_input = "https://twitter.com/uloruba72"
 
 
-    tweet(url_from_input)
-    //twitter_profile(url_from_input)
+    //tweet(url_from_input)
+    twitter_profile(url_from_input)
 
 
 
@@ -71,6 +71,7 @@ fun twitter_profile(url_from_input :String){
     println("Followers : " + twitterProfile.followersCounter)
     println("Likes : " + twitterProfile.likesCounter)
     println("External Link : " + twitterProfile.externalLink)
+    println("Bio : " + twitterProfile.bio)
 
 }
 
