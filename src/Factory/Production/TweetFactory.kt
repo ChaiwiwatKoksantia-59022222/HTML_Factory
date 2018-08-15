@@ -109,11 +109,11 @@ class TweetFactory {
         val weight: Int = Integer.parseInt(cookbook.videoWeight)
 
         if (height > weight) {
-            cookbook.videoAspect = "portrait"
+            cookbook.videoAspect = "Portrait"
         } else if (weight > height) {
             cookbook.videoAspect = "Landscape"
         } else {
-            cookbook.videoAspect = "square"
+            cookbook.videoAspect = "Square"
         }
     }
 
